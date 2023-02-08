@@ -1,0 +1,24 @@
+variables:
+  APP_TAG: security-bot
+  TEST_REGISTRY_IMAGE: registry-test.crystalchain.io/crystalchain/${APP_TAG}
+
+stages:
+  - build
+  - deploy
+
+build_docker_image:
+  stage: build
+  image: docker:19.03.8
+  services:
+    - docker:19.03.8-dind
+  script:
+    - docker build . -t ${APP_TAG}:latest --no-cache=true --pull=true 
+
+
+deploy_to_registry:
+  stage: deploy
+  image: docker:19.03.8
+  before_script:
+    - docker login -u="" -p="" registry-test.crystalchain.io
+  script:
+    - docker push ${TEST_REGISTRY_IMAGE}:latest
